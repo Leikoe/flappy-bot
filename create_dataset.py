@@ -1,28 +1,23 @@
 import time
-import pyautogui
 import keyboard
+import uuid
+import logging
+import os
+import pyautogui
 
-
-# def space_pressed(event) -> bool:
-#     return event.event_type == keyboard.KEY_DOWN and event.name == 'space'
-
-
-def main():
-    jump = 0
-    no_jump = 0
-    time.sleep(7)
-    while True:
-        time.sleep(0.03)
-        # event = keyboard.is_pressed()
-        if keyboard.is_pressed('space'):
-            pyautogui.screenshot(f'jump/jump_screenshot{jump}.png')
-            jump += 1
-            print('Added screenshot in jump directory')
-        else:
-            pyautogui.screenshot(f'no_jump/no_jump_screenshot{no_jump}.png')
-            no_jump += 1
-            print('Added screenshot in no jump directory')
+DATASET_FOLDER = "dataset"
 
 
 if __name__ == "__main__":
-    main()
+    logging.info("starting up screenshot loop")
+    if not os.path.isdir(f"{DATASET_FOLDER}/"):
+        os.mkdir(DATASET_FOLDER)
+
+    time.sleep(5)
+    while True:
+        time.sleep(1./30.)
+        # event = keyboard.is_pressed()
+        if keyboard.is_pressed('space'):
+            pyautogui.screenshot(f'{DATASET_FOLDER}/{uuid.uuid4()}.png')
+        else:
+            pyautogui.screenshot(f'{DATASET_FOLDER}/{uuid.uuid4()}.png')
