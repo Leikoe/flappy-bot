@@ -2,6 +2,8 @@
 
 a simple flappy bot ai, which uses a neural network to classify ingame screenshots and decide on key presses
 
+> note: this repo was tested on https://flappybird.io/
+
 ## requirements
 
 - numpy
