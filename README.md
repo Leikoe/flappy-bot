@@ -2,6 +2,18 @@
 
 a simple flappy bot ai, which uses a neural network to classify ingame screenshots and decide on key presses
 
+## requirements
+
+- numpy
+- keyboard
+
+**os specific packages**
+for macos:
+- tensorflow-macos
+- tensorflow-metal
+for linux/windows:
+- tensorflow
+
 ## quick setup
 
 TODO
