@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -34,7 +35,6 @@ ys = np.array(ys)
 print(f"number of images: {xs.shape[0]}")
 print(f"number of labels: {ys.shape[0]}")
 
-from matplotlib import pyplot as plt
 plt.imshow(xs[0], interpolation='nearest')
 plt.show()
 
@@ -85,10 +85,12 @@ model = keras.Sequential(
 model.summary()
 
 epochs = 15
-model.compile(loss="mean_squared_error", optimizer="adam", metrics=["accuracy"])
+model.compile(loss="mean_squared_error",
+              optimizer="adam", metrics=["accuracy"])
 model.fit(x_train, y_train, epochs=epochs, validation_split=0.1)
 
 
 score = model.evaluate(x_test, y_test, verbose=0)
 print("Test loss:", score[0])
 print("Test accuracy:", score[1])
+model.save("model")
