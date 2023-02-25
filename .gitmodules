@@ -1,0 +1,3 @@
+[submodule "Flappy-bird-python-dataset"]
+	path = Flappy-bird-python-dataset
+	url = https://github.com/Leikoe/Flappy-bird-python-dataset
