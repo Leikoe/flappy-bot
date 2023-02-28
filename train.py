@@ -7,7 +7,7 @@ from PIL import Image, ImageFilter
 from numpy import asarray
 
 TUNE = False
-JUMP_WEIGHT = 4
+JUMP_WEIGHT = 5
 
 # jump = 1, no_jump = 0
 xs = []
@@ -18,7 +18,7 @@ for filename in os.listdir(f"{DATASET_DIR}/jump"):
     f = os.path.join(f"{DATASET_DIR}/jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((25, 35))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         for i in range(JUMP_WEIGHT):
             xs.append(numpydata)
@@ -28,7 +28,7 @@ for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
     f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((25, 35))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         xs.append(numpydata)
         ys.append(0)
@@ -40,7 +40,7 @@ print(f"number of images: {xs.shape[0]}")
 print(f"number of labels: {ys.shape[0]}")
 
 # Model / data parameters
-input_shape = (35, 25, 1)
+input_shape = (50, 50, 1)
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
