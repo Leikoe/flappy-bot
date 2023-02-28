@@ -3,28 +3,32 @@ import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
 import os
-from PIL import Image
+from PIL import Image, ImageFilter
 from numpy import asarray
+
+TUNE = False
+JUMP_WEIGHT = 4
 
 # jump = 1, no_jump = 0
 xs = []
 ys = []
 
-DATASET_DIR = "dataset"
+DATASET_DIR = "./Flappy-bird-python-dataset/dataset"
 for filename in os.listdir(f"{DATASET_DIR}/jump"):
     f = os.path.join(f"{DATASET_DIR}/jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L')
+        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((25, 35))
         numpydata = asarray(img)
-        xs.append(numpydata)
-        ys.append(1)
+        for i in range(JUMP_WEIGHT):
+            xs.append(numpydata)
+            ys.append(1)
 
 for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
     f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L')
+        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((25, 35))
         numpydata = asarray(img)
         xs.append(numpydata)
         ys.append(0)
@@ -35,12 +39,8 @@ ys = np.array(ys)
 print(f"number of images: {xs.shape[0]}")
 print(f"number of labels: {ys.shape[0]}")
 
-plt.imshow(xs[0], interpolation='nearest')
-plt.show()
-
 # Model / data parameters
-input_shape = (600, 400, 1)
-
+input_shape = (35, 25, 1)
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
@@ -68,6 +68,21 @@ print("x_train shape:", x_train.shape)
 print(x_train.shape[0], "train samples")
 print(x_test.shape[0], "test samples")
 
+# plt.imshow(xs[0], interpolation='nearest')
+# plt.show()
+
+plt.figure(figsize=(10,10))
+for i in range(25):
+    plt.subplot(5,5,i+1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.imshow(xs[i], cmap=plt.cm.binary)
+    plt.xlabel(ys[i])
+plt.show()
+
+y_train = keras.utils.to_categorical(y_train, 2)
+y_test = keras.utils.to_categorical(y_test, 2)
 
 model = keras.Sequential(
     [
@@ -78,16 +93,18 @@ model = keras.Sequential(
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),
-        layers.Dense(1, activation="sigmoid"),
+        layers.Dense(2, activation="softmax"),
     ]
 )
+if TUNE:
+    model = keras.models.load_model("./model")
 
 model.summary()
 
-epochs = 15
-model.compile(loss="mean_squared_error",
+epochs = 100
+model.compile(loss="categorical_crossentropy",
               optimizer="adam", metrics=["accuracy"])
-model.fit(x_train, y_train, epochs=epochs, validation_split=0.1)
+model.fit(x_train, y_train, epochs=epochs, batch_size=64, validation_split=0.1)
 
 
 score = model.evaluate(x_test, y_test, verbose=0)
