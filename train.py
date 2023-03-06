@@ -19,7 +19,7 @@ wandb.init(
         "optimizer": "adam",
         "loss": "categorical_crossentropy",
         "metric": "accuracy",
-        "epoch": 50,
+        "epoch": 65,
         "batch_size": 256,
     },
 )
@@ -38,19 +38,21 @@ for filename in os.listdir(f"{DATASET_DIR}/jump"):
     f = os.path.join(f"{DATASET_DIR}/jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(
-            ImageFilter.FIND_EDGES).resize((50, 50))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         for i in range(JUMP_WEIGHT):
             xs.append(numpydata)
             ys.append(1)
 
+# Traitement d'image en moins, meilleur résultat
+# .filter(ImageFilter.FIND_EDGES)
+
+
 for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
     f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(
-            ImageFilter.FIND_EDGES).resize((50, 50))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         xs.append(numpydata)
         ys.append(0)
@@ -110,15 +112,18 @@ y_test = keras.utils.to_categorical(y_test, 2)
 model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        # cas 1 → 16, cas 2 → 32
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        # layers.MaxPooling2D(pool_size=(2, 2)),
+        # cas 1 → 32, cas 2 → 64
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dropout(config.dropout),
-        layers.Dense(64, activation="relu"),
         # layers.Dropout(config.dropout),
-        # layers.Dense(32, activation="relu"),
+        layers.Dense(64, activation="relu"),  # cas 1 → 64, cas 2 → 64
+        # layers.Dropout(config.dropout), # Pas si mal avec
+        # layers.Dense(128, activation="relu"),  # cas 1 → 32, cas 2 → 64
+        # layers.Dropout(config.dropout),
         layers.Dense(2, activation="softmax"),
     ]
 )
