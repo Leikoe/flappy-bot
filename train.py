@@ -38,7 +38,8 @@ for filename in os.listdir(f"{DATASET_DIR}/jump"):
     f = os.path.join(f"{DATASET_DIR}/jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').resize((50, 50))
+        img = Image.open(f).convert('L').filter(
+            ImageFilter.FIND_EDGES).resize((50, 50))
         numpydata = asarray(img)
         for i in range(JUMP_WEIGHT):
             xs.append(numpydata)
@@ -52,7 +53,8 @@ for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
     f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').resize((50, 50))
+        img = Image.open(f).convert('L').filter(
+            ImageFilter.FIND_EDGES).resize((50, 50))
         numpydata = asarray(img)
         xs.append(numpydata)
         ys.append(0)
@@ -113,18 +115,36 @@ model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
         # cas 1 → 16, cas 2 → 32
-        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
+        layers.Conv2D(64, kernel_size=(4, 4),
+                      activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         # cas 1 → 32, cas 2 → 64
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.Conv2D(128, kernel_size=(4, 4),
+                      activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         # layers.Dropout(config.dropout),
-        layers.Dense(64, activation="relu"),  # cas 1 → 64, cas 2 → 64
-        # layers.Dropout(config.dropout), # Pas si mal avec
+        layers.Dense(64, activation=keras.layers.LeakyReLU(
+            alpha=0.01)),  # cas 1 → 64, cas 2 → 64
+        # à la place de relu
+        # keras.layers.LeakyReLU(
+        #     alpha=0.01)
+        # layers.Dropout(config.dropout),  # Pas si mal avec
         # layers.Dense(128, activation="relu"),  # cas 1 → 32, cas 2 → 64
         # layers.Dropout(config.dropout),
         layers.Dense(2, activation="softmax"),
+
+        # LeNet implementation - marche pour le début mais a des problèmes pour passer les tuyaux
+        # layers.Conv2D(32, kernel_size=(5, 5), padding='same',
+        #               activation='relu'),
+        # layers.MaxPool2D(strides=2),
+        # layers.Conv2D(48, kernel_size=(5, 5),
+        #               padding='valid', activation='relu'),
+        # layers.MaxPool2D(strides=2),
+        # layers.Flatten(),
+        # layers.Dense(256, activation='relu'),
+        # layers.Dense(84, activation='relu'),
+        # layers.Dense(2, activation='softmax'),
     ]
 )
 if TUNE:
@@ -143,11 +163,35 @@ wandb_callbacks = [
     WandbMetricsLogger(),
     # WandbModelCheckpoint(filepath="flappybot_model_{epoch:02d}"),
 ]
-model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size,
-          validation_split=0.1, callbacks=wandb_callbacks)
+# model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size,
+#          validation_split=0.1, callbacks=wandb_callbacks)
+model_history = model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size,
+                          validation_split=0.1, callbacks=wandb_callbacks)
 wandb.finish()
 
 score = model.evaluate(x_test, y_test, verbose=0)
 print("Test loss:", score[0])
 print("Test accuracy:", score[1])
 model.save("model")
+
+
+def plot_train_history_accuracy(history):
+    acc = list(history.history.keys())[1]
+    plt.plot(history.history[acc])
+    plt.title('model accuracy')
+    plt.ylabel(acc)
+    plt.xlabel('epoch')
+    plt.show()
+
+
+def plot_train_history_loss(history):
+    loss = list(history.history.keys())[0]
+    plt.plot(history.history[loss])
+    plt.title('model loss')
+    plt.ylabel(loss)
+    plt.xlabel('epoch')
+    plt.show()
+
+
+plot_train_history_accuracy(model_history)
+plot_train_history_loss(model_history)
