@@ -10,7 +10,7 @@ from wandb.keras import WandbMetricsLogger, WandbModelCheckpoint
 
 wandb.init(
     project="flappy-bot",
-    # entity="leo-paille",
+    entity="leo-paille",
     # (optional) set entity to specify your username or team name
     # entity="my_team",
     config={
@@ -33,24 +33,30 @@ xs = []
 ys = []
 
 DATASET_DIR = "./Flappy-bird-python-dataset/dataset"
-for filename in os.listdir(f"{DATASET_DIR}/jump"):
-    f = os.path.join(f"{DATASET_DIR}/jump", filename)
-    # checking if it is a file
+filenames = os.listdir(DATASET_DIR)
+runs = {}
+for filename in filenames:
+    f = os.path.join(DATASET_DIR, filename)
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((50, 50))
-        numpydata = asarray(img)
-        for i in range(JUMP_WEIGHT):
-            xs.append(numpydata)
-            ys.append(1)
+        run_uuid, frame_idx, jump = filename.replace(".png", "").split("_")
+        frame_idx, jump = int(frame_idx), int(jump)
+        img = Image.open(f).convert('L').resize((80, 80))
 
-for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
-    f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
-    # checking if it is a file
-    if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((50, 50))
-        numpydata = asarray(img)
-        xs.append(numpydata)
-        ys.append(0)
+        # Scale images to the [0, 1] range
+        numpydata = asarray(img).astype("float32") / 255
+        if run_uuid not in runs:
+            runs[run_uuid] = []
+        runs[run_uuid].append((numpydata, frame_idx, jump))
+
+for run_uuid in runs:
+    runs[run_uuid].sort(key=lambda x: x[1])
+
+    for i in range(0, len(runs[run_uuid]) - 4, 4):
+        four_consecutive_frames = [runs[run_uuid][i+0][0], runs[run_uuid][i+1][0], runs[run_uuid][i+2][0], runs[run_uuid][i+3][0]]
+        four_consecutive_frames = np.array(four_consecutive_frames, dtype="float32")
+        four_consecutive_frames = np.einsum("chw->hwc", four_consecutive_frames)
+        xs.append(four_consecutive_frames)
+        ys.append(runs[run_uuid][3+i][2])
 
 xs = np.array(xs)
 ys = np.array(ys)
@@ -59,7 +65,7 @@ print(f"number of images: {xs.shape[0]}")
 print(f"number of labels: {ys.shape[0]}")
 
 # Model / data parameters
-input_shape = (50, 50, 1)
+input_shape = (80, 80, 4, 1)
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
@@ -77,13 +83,8 @@ x_train, x_test = xs[:TRAIN_IDX], xs[TRAIN_IDX:]
 y_train, y_test = ys[:TRAIN_IDX], ys[TRAIN_IDX:]
 print(x_train.shape)
 
-# Scale images to the [0, 1] range
-x_train = x_train.astype("float32") / 255
-x_test = x_test.astype("float32") / 255
-# Make sure images have shape (600, 400, 1)
 x_train = np.expand_dims(x_train, -1)
 x_test = np.expand_dims(x_test, -1)
-print("x_train shape:", x_train.shape)
 print(x_train.shape[0], "train samples")
 print(x_test.shape[0], "test samples")
 
@@ -91,13 +92,13 @@ print(x_test.shape[0], "test samples")
 # plt.show()
 
 plt.figure(figsize=(10,10))
-for i in range(25):
+for i in range(4):
     plt.subplot(5,5,i+1)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
-    plt.imshow(xs[i], cmap=plt.cm.binary)
-    plt.xlabel(ys[i])
+    plt.imshow(xs[0][:,:,i], cmap=plt.cm.binary)
+    plt.xlabel(ys[0])
 plt.show()
 
 y_train = keras.utils.to_categorical(y_train, 2)
@@ -106,9 +107,9 @@ y_test = keras.utils.to_categorical(y_test, 2)
 model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
+        layers.MaxPooling3D(pool_size=(2, 2, 1)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
         # layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(config.dropout),
