@@ -19,7 +19,7 @@ wandb.init(
         "optimizer": "adam",
         "loss": "categorical_crossentropy",
         "metric": "accuracy",
-        "epoch": 65,
+        "epoch": 100,
         "batch_size": 256,
     },
 )
