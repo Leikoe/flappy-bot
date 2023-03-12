@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
-import tensorflow_addons as tfa
+import visualkeras
 import os
 from PIL import Image, ImageFilter
 from numpy import asarray
@@ -11,15 +11,14 @@ from wandb.keras import WandbMetricsLogger, WandbModelCheckpoint
 
 wandb.init(
     project="flappy-bot",
-    entity="balaborde",
+    entity="tristan-retali",
     # (optional) set entity to specify your username or team name
     # entity="my_team",
     config={
-        "dropout": 0.50,
         "optimizer": "adam",
         "loss": "categorical_crossentropy",
         "metric": "accuracy",
-        "epoch": 65,
+        "epoch": 5,
         "batch_size": 256,
     },
 )
@@ -107,11 +106,10 @@ y_test = keras.utils.to_categorical(y_test, 2)
 model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
-        layers.Conv2D(64, kernel_size=(3, 3), padding="same", activation="relu"),
+        layers.Conv2D(128, kernel_size=(3, 3), strides=(
+            5, 5), padding="same", activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), padding="same", activation="relu"),
         layers.Flatten(),
-        layers.Dropout(config.dropout),
         layers.Dense(64, activation="relu"),
         layers.Dense(2, activation="softmax"),
     ]
@@ -120,6 +118,9 @@ if TUNE:
     model = keras.models.load_model("./model")
 
 model.summary()
+
+visualkeras.layered_view(
+    model, legend=True, to_file="./img/neural_network.png").show()
 
 model.compile(loss=config.loss,
               optimizer=config.optimizer, metrics=[config.metric])
