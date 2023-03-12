@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
+import tensorflow_addons as tfa
 import os
 from PIL import Image, ImageFilter
 from numpy import asarray
@@ -10,7 +11,7 @@ from wandb.keras import WandbMetricsLogger, WandbModelCheckpoint
 
 wandb.init(
     project="flappy-bot",
-    # entity="leo-paille",
+    entity="balaborde",
     # (optional) set entity to specify your username or team name
     # entity="my_team",
     config={
@@ -18,12 +19,11 @@ wandb.init(
         "optimizer": "adam",
         "loss": "categorical_crossentropy",
         "metric": "accuracy",
-        "epoch": 50,
+        "epoch": 65,
         "batch_size": 256,
     },
 )
 config = wandb.config
-
 
 TUNE = False
 JUMP_WEIGHT = 5
@@ -37,7 +37,7 @@ for filename in os.listdir(f"{DATASET_DIR}/jump"):
     f = os.path.join(f"{DATASET_DIR}/jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((50, 50))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         for i in range(JUMP_WEIGHT):
             xs.append(numpydata)
@@ -47,7 +47,7 @@ for filename in os.listdir(f"{DATASET_DIR}/no_jump"):
     f = os.path.join(f"{DATASET_DIR}/no_jump", filename)
     # checking if it is a file
     if os.path.isfile(f):
-        img = Image.open(f).convert('L').filter(ImageFilter.FIND_EDGES).resize((50, 50))
+        img = Image.open(f).convert('L').resize((50, 50))
         numpydata = asarray(img)
         xs.append(numpydata)
         ys.append(0)
@@ -60,6 +60,7 @@ print(f"number of labels: {ys.shape[0]}")
 
 # Model / data parameters
 input_shape = (50, 50, 1)
+
 
 def unison_shuffled_copies(a, b):
     assert len(a) == len(b)
@@ -90,9 +91,9 @@ print(x_test.shape[0], "test samples")
 # plt.imshow(xs[0], interpolation='nearest')
 # plt.show()
 
-plt.figure(figsize=(10,10))
+plt.figure(figsize=(10, 10))
 for i in range(25):
-    plt.subplot(5,5,i+1)
+    plt.subplot(5, 5, i + 1)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
@@ -106,15 +107,12 @@ y_test = keras.utils.to_categorical(y_test, 2)
 model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.Conv2D(64, kernel_size=(3, 3), padding="same", activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        # layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), padding="same", activation="relu"),
         layers.Flatten(),
         layers.Dropout(config.dropout),
         layers.Dense(64, activation="relu"),
-        # layers.Dropout(config.dropout),
-        # layers.Dense(32, activation="relu"),
         layers.Dense(2, activation="softmax"),
     ]
 )
@@ -131,7 +129,8 @@ wandb_callbacks = [
     WandbMetricsLogger(),
     # WandbModelCheckpoint(filepath="flappybot_model_{epoch:02d}"),
 ]
-model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size, validation_split=0.1, callbacks=wandb_callbacks)
+model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size, validation_split=0.1,
+          callbacks=wandb_callbacks)
 wandb.finish()
 
 score = model.evaluate(x_test, y_test, verbose=0)
