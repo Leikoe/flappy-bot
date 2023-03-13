@@ -48,11 +48,15 @@ If you want to play to the game, you should go in the Flappy-bird-python-dataset
 
 To create our AI, we chose to use the CNN (Convolutional Neural Network) architecture which is used for the image classification.
 
-1. Change the background game in black
+1. Change the background game in black :
                 
 <img src="img/bg_black_flappy_bird.png" width="300px" height="450px">
 
-2. Resize image to 50x50
+2. Image Processing :
+
+<img src="img/mosaic_image_processing.png" width="500px" height="500px">
+
+3. Resize image to 50x50
 
 
 The architecture of the neural network is shown in the blueprint below. The first layer Convolves take the input image with an 3x3x1x64 kernel at strides size of 2. The output is then put in a 2x2 **Max Pooling** layer. After, the output go throught a **Flatten** layer which is mandatory in a CNN architecture because she establish the connection between the **Convolutional** layers and basic layers of the Deep Learning. We have two more hidden layer, they are **Dense** layers. the first one consists of 64 fully connected **ReLu** nodes and the last on is a 2 fully connected **SoftMax** nodes, she represent the output layer.
@@ -82,6 +86,6 @@ Non-trainable params: 0
 
 ## Training Your Own
 
-TODO
+If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appear. Click on the red cross and the model will start his training. At the end go in the **Flappy-bird-python-dataset** ans set the ia_mode variable at True. Start flappy.py and your AI will play, have fun.  
 
 

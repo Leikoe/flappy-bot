@@ -100,7 +100,7 @@ for i in range(25):
     plt.xlabel(ys[i])
 plt.show()
 
-y_train = keras.utils.to_categorical(y_train, 2) 
+y_train = keras.utils.to_categorical(y_train, 2)
 y_test = keras.utils.to_categorical(y_test, 2)
 
 model = keras.Sequential(
@@ -110,7 +110,7 @@ model = keras.Sequential(
                       strides=(2, 2), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dense(64, activation="relu"),
+        layers.Dense(64, activation=keras.layers.LeakyReLU(alpha=0.01)),
         layers.Dense(2, activation="softmax"),
     ]
 )
