@@ -21,20 +21,20 @@ If you want to install tensorflow on Windows, and use it with your GPU, you will
 - Launch Miniconda (the name of the command prompt is something like "Anaconda Prompt (Miniconda3)")
 - Do the following commands (replace the python version with latest one that's compatible with the tensorflow version you're planning on using):
 
-        conda create --name tf_X.X python==3.10
-        conda activate tf_X.X
+        $ conda create --name tf_X.X python==3.10
+        $ conda activate tf_X.X
 
 - If you want to install the latest version of tensorflow do the following command:
 
-        pip install tensorflow
+        $ pip install tensorflow
 
 - If you want to install a specific version of tensorflow do the following command (replace the Xs with the version you want to use, e.g. tensorflow==2.10):
 
-        pip install tensorflow==X.X
+        $ pip install tensorflow==X.X
 
 To make sure everything works, you can do the following commands in your created environment:
 
-        python
+        $ python
         >>> import tensorflow as tf
         >>> len(tf.config.list_physical_devices('GPU'))
 
