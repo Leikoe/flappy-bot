@@ -87,9 +87,6 @@ print("x_train shape:", x_train.shape)
 print(x_train.shape[0], "train samples")
 print(x_test.shape[0], "test samples")
 
-# plt.imshow(xs[0], interpolation='nearest')
-# plt.show()
-
 plt.figure(figsize=(10, 10))
 for i in range(25):
     plt.subplot(5, 5, i + 1)
@@ -128,7 +125,6 @@ model.compile(loss=config.loss,
 # Add WandbMetricsLogger to log metrics and WandbModelCheckpoint to log model checkpoints
 wandb_callbacks = [
     WandbMetricsLogger(),
-    # WandbModelCheckpoint(filepath="flappybot_model_{epoch:02d}"),
 ]
 model.fit(x_train, y_train, epochs=config.epoch, batch_size=config.batch_size, validation_split=0.1,
           callbacks=wandb_callbacks)
