@@ -26,7 +26,7 @@ A simple Flappy Bird AI, which uses a neural network to classify ingame screensh
 
 If you want to use Tensorflow with your GPU follow this installation guide:
 
-[Installation Guide with GPU](TF_GPU_WIN)
+[Installation Guide with GPU](TF_GPU_WIN.md)
 
 Otherwise, if you don't care about your computer burning and your fans blowing like a hurricane (if you have one) by using your CPU, you just need to install tensorflow with the following command:
 
