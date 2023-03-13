@@ -18,14 +18,14 @@ wandb.init(
         "optimizer": "adam",
         "loss": "categorical_crossentropy",
         "metric": "accuracy",
-        "epoch": 5,
+        "epoch": 10,
         "batch_size": 256,
     },
 )
 config = wandb.config
 
 TUNE = False
-JUMP_WEIGHT = 5
+JUMP_WEIGHT = 4
 
 # jump = 1, no_jump = 0
 xs = []
@@ -100,14 +100,14 @@ for i in range(25):
     plt.xlabel(ys[i])
 plt.show()
 
-y_train = keras.utils.to_categorical(y_train, 2)
+y_train = keras.utils.to_categorical(y_train, 2) 
 y_test = keras.utils.to_categorical(y_test, 2)
 
 model = keras.Sequential(
     [
         keras.Input(shape=input_shape),
-        layers.Conv2D(128, kernel_size=(3, 3), strides=(
-            5, 5), padding="same", activation="relu"),
+        layers.Conv2D(64, kernel_size=(3, 3),
+                      strides=(2, 2), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dense(64, activation="relu"),
