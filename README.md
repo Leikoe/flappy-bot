@@ -48,4 +48,4 @@ If you want to play to the game, you should go in the Flappy-bird-python-dataset
 
 ## Training Your Own
 
-TODO
+TODO.
