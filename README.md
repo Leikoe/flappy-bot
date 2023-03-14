@@ -2,10 +2,11 @@
 
 a simple flappy Bot AI, which uses a neural network to classify ingame screenshots and decide on key presses.
 
-> note: this repository use the flappy bird of https://github.com/LeonMarqs/Flappy-bird-python
+> Note: this repository uses the flappy bird game of https://github.com/LeonMarqs/Flappy-bird-python as a submodule.
 
 ## Requirements
 
+**Python modules:**
 - numpy
 - Image
 - ImageFilter
@@ -13,16 +14,16 @@ a simple flappy Bot AI, which uses a neural network to classify ingame screensho
 - uuid
 - visualkeras
 - wandb
+
 **os specific packages**
 - for macos:
   - tensorflow-macos
   - tensorflow-metal
-- for linux/windows:
+- For Linux/Windows:
   - tensorflow
 
 ## Quick Setup
 
-**os specific setup**
 - for macos:
   - Go on this link : https://developer.apple.com/metal/tensorflow-plugin/ and follow each step. Becareful when you install **tensorflow-macos** and **tensorflow-metal**. You should have the same version as in the **requirement.txt**.
 
@@ -30,9 +31,17 @@ a simple flappy Bot AI, which uses a neural network to classify ingame screensho
 python -m pip install tensorflow-macos==2.9.0
 python -m pip install tensorflow-metal==0.5.0
 ```
-- for linux/windows :
-  - TODO
 
+- for windows:
+  - If you want to use Tensorflow with your GPU follow this installation guide: [Installation Guide with GPU](TF_GPU_WIN.md)
+  - Otherwise, if you don't care about your computer burning and your fans blowing like a hurricane (if you have one) by using your CPU, you just need to install tensorflow with the following command:
+
+```bash
+pip install tensorflow
+```
+
+- for linux :
+  - install tensorflow
 
 ## The game
 
@@ -86,6 +95,4 @@ Non-trainable params: 0
 
 ## Training Your Own
 
-If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appear. Click on the red cross and the model will start his training. At the end go in the **Flappy-bird-python-dataset** ans set the ia_mode variable at True. Start flappy.py and your AI will play, have fun.  
-
-
+If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appear. Click on the red cross and the model will start his training. At the end go in the **Flappy-bird-python-dataset** ans set the ia_mode variable at True. Start flappy.py and your AI will play, have fun.
