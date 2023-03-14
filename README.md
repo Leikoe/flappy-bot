@@ -96,3 +96,11 @@ Non-trainable params: 0
 ## Training Your Own
 
 If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appear. Click on the red cross and the model will start his training. At the end go in the **Flappy-bird-python-dataset** ans set the ia_mode variable at True. Start flappy.py and your AI will play, have fun.
+
+## Our results
+
+Check theses links if you want to see our different models :
+   - https://wandb.ai/leo-paille/flappy-bot
+   - https://wandb.ai/tristan-retali/flappy-bot 
+   - https://wandb.ai/balaborde/flappy-bot
+
