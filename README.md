@@ -34,7 +34,7 @@ python -m pip install tensorflow-metal==0.5.0
 
 - for windows:
   - If you want to use Tensorflow with your GPU follow this installation guide: [Installation Guide with GPU](TF_GPU_WIN.md)
-  - Otherwise, if you don't care about your computer burning and your fans blowing like a hurricane (if you have one) by using your CPU, you just need to install tensorflow with the following command:
+  - Otherwise, if you don't care about your computer burning and your fans blowing like a hurricane by using your CPU, you just need to install tensorflow with the following command:
 
 ```bash
 pip install tensorflow
@@ -47,11 +47,11 @@ pip install tensorflow
 
 <img src="img/game_exemple.gif" width="300px" height="450px">
 
-In this game, the goal is to control a bird that has to go throught pipes. If you touch the ground or a pipe, you lose the game. In this game version, to jump you should press space bar. 
+In this game, the goal is to control a bird that has to go through pipes. If you touch the ground or a pipe, you lose the game. In this game version, to jump you should press space bar. 
 
 <img src="img/set_ia-mode_false.png" width="425px" height="75px">
 
-If you want to play to the game, you should go in the Flappy-bird-python-dataset folder and set **ia_mode** value to false. Then you should launch the file. That will also add pictures in dataset folder.
+If you want to play to the game, you should go in the Flappy-bird-python-dataset folder and set **ia_mode** value to false. Then launch the file. That will also add pictures in the dataset folder.
 
 ## Learning Method
 
@@ -68,7 +68,7 @@ To create our AI, we chose to use the CNN (Convolutional Neural Network) archite
 3. Resize image to 50x50
 
 
-The architecture of the neural network is shown in the blueprint below. The first layer Convolves take the input image with an 3x3x1x64 kernel at strides size of 2. The output is then put in a 2x2 **Max Pooling** layer. After, the output go throught a **Flatten** layer which is mandatory in a CNN architecture because she establish the connection between the **Convolutional** layers and basic layers of the Deep Learning. We have two more hidden layer, they are **Dense** layers. the first one consists of 64 fully connected **ReLu** nodes and the last on is a 2 fully connected **SoftMax** nodes, she represent the output layer.
+The architecture of the neural network is shown in the blueprint below. The first layer Convolves takes the input image with an 3x3x1x64 kernel at strides size of 2. The output is then put in a 2x2 **Max Pooling** layer. Then, the output goes through a **Flatten** layer which is mandatory in a CNN architecture because it establishes the connection between the **Convolutional** layers and basic layers of the Deep Learning. We have two more hidden layers, they are **Dense** layers. The first one consists of 64 fully connected **ReLu** nodes and the last one is a 2 fully-connected **SoftMax** node, which represents the output layer.
 
 <img src="img/neural_network.png">
 
@@ -95,7 +95,7 @@ Non-trainable params: 0
 
 ## Training Your Own
 
-If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appear. Click on the red cross and the model will start his training. At the end go in the **Flappy-bird-python-dataset** ans set the ia_mode variable at True. Start flappy.py and your AI will play, have fun.
+If you want to train the model, you should be in the **flappy-bot** folder and then launch the **train.py** file. Wait until the image mosaic appears. Click on the red cross and the model will start its training. At the end of the process, go in the **Flappy-bird-python-dataset** ans set the ia_mode variable to True. Start flappy.py and your AI will play, have fun.
 
 ## Our results
 
